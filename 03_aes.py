@@ -133,14 +133,14 @@ def mixColumsInv(x : Matrix) -> None:
 
 loadSBoxes()
 
+if __name__ == '__main__':
+    plaintext = bytearray("Hallo du Alter A", "UTF-8")
+    keys = [ bytearray("Balko ist cooler", "UTF-8"), bytearray("ubodubgsbjvbkncv", "UTF-8"), bytearray("45k5kh345kh5hk4b", "UTF-8"), bytearray("-xlcma-clmakccyc", "UTF-8"), bytearray("9778IHOD6%&/((SD", "UTF-8"), bytearray("9Hf37/&fjhcZhgh+", "UTF-8"), 
+            bytearray("-#+xy676%&/gxchj", "UTF-8"), bytearray("!shd68asgn#+9jh4", "UTF-8"), bytearray("xycc.,mimim<a3ff", "UTF-8"), bytearray("sfsf<d8tgjghjjgg", "UTF-8"), bytearray("hoh)/)/GFGzibxcvl", "UTF-8") ]
 
-plaintext = bytearray("Hallo du Alter A", "UTF-8")
-keys = [ bytearray("Balko ist cooler", "UTF-8"), bytearray("ubodubgsbjvbkncv", "UTF-8"), bytearray("45k5kh345kh5hk4b", "UTF-8"), bytearray("-xlcma-clmakccyc", "UTF-8"), bytearray("9778IHOD6%&/((SD", "UTF-8"), bytearray("9Hf37/&fjhcZhgh+", "UTF-8"), 
-         bytearray("-#+xy676%&/gxchj", "UTF-8"), bytearray("!shd68asgn#+9jh4", "UTF-8"), bytearray("xycc.,mimim<a3ff", "UTF-8"), bytearray("sfsf<d8tgjghjjgg", "UTF-8"), bytearray("hoh)/)/GFGzibxcvl", "UTF-8") ]
 
+    print(plaintext)
+    ciphertext = encipher(plaintext, keys)
+    print(ciphertext)
 
-print(plaintext)
-ciphertext = encipher(plaintext, keys)
-print(ciphertext)
-
-print(decipher(ciphertext, keys))
+    print(decipher(ciphertext, keys))
