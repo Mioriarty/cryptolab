@@ -43,16 +43,16 @@ def countSetBits(n : uint16) -> int:
     else:
         return (n & 1) + countSetBits(n >> 1)
 
-def doLinearAnalysis(plainCryptoPairs : list[tuple[bytearray]], includedInputs : uint16, includedOutputs : uint16):
+def doLinearAnalysis(plainCryptoPairs : list[tuple[uint16]], includedInputs : uint16, includedOutputs : uint16) -> uint16:
     includedOutputsList = [k for k in range(16) if (includedOutputs >> k) & 1 != 0]
 
     keyBiases = {}
 
     for smushedKey in range(1 << len(includedOutputsList)):
         # Example:
-        # includedInputs: 0b1010000010100000
-        # smushedKey:     0b1011
-        # key:            0b1000000010100000
+        # includedOutputs: 0b1010000010100000
+        # smushedKey:      0b1011
+        # key:             0b1000000010100000
 
 
         # bit representation as list
@@ -92,7 +92,7 @@ spn = bindKeysToSPN(generateSPN([SBOX]*4, [PBOX]*4, 4), [KEY]*5)
 
 # generate plaintext cryptotext pairs
 plainCryptoPairs = []
-for _ in range(3000):
+for _ in range(8000):
     plaintext = uint16(int(random.uniform(0, 2**16-1)))
     plainCryptoPairs.append((plaintext, spn(plaintext)))
 
@@ -102,5 +102,5 @@ print(KEY & 0b1010000010100000)
 
 
 spn = bindKeysToSPN(generateSPN([list(range(0, 16))] * 4, [list(range(0, 16))] * 4, 4), [0]*5)
-p = uint16(45634)
+p = uint16(12345)
 print(spn(p))
