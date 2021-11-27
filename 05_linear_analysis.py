@@ -78,10 +78,7 @@ def doLinearAnalysis(plainCryptoPairs : list[tuple[bytearray]], includedInputs :
 
     print(keyBiases)
     bestKey = max(keyBiases, key = lambda e : abs(keyBiases[e]))
-    if(keyBiases[bestKey] < 0):
-        return bestKey ^ 0xFFFF
-    else:
-        return bestKey
+    return bestKey
         
 
 
