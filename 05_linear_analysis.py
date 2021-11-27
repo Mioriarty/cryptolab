@@ -7,29 +7,25 @@ def generateSPN(sBox : list[uint8], pBox : list[uint8], numRounds : int):
 
     def encipher(plaintext : uint16, keys : list[uint16]) -> uint16:
         cryptotext = plaintext
-        numChunks = (int(log2(plaintext)) + 1) // 4
-
-        def getChunkFromNumber(number : uint16, chunkNum : uint8) -> uint8:
-            return (number >> (chunkNum * 4)) & 0b1111
-        
-        def setChunkInNumber(number : uint16, chunkNum : uint8, chunkValue : uint8) -> uint16:
-            return number | (chunkValue << (chunkNum * 4))
 
         for round in range(numRounds):
-            # kay addition
+            # key addition
             cryptotext = cryptotext ^ keys[round]
 
             # substitution
             temp = uint16(0)
-            for chunk in range(numChunks):
-                temp = setChunkInNumber(temp, chunk, sBox[round][int(getChunkFromNumber(cryptotext, chunk))])
+            for chunk in range(3, -1, -1):
+                chunkValue = (cryptotext >> (chunk * 4)) & 0b1111
+                temp <<= 4
+                temp += sBox[round][chunkValue]
             cryptotext = temp
 
             # permutation
             temp = uint16(0)
-            for chunk in range(numChunks):
-                # smaller 4bit chunk
-                temp = setChunkInNumber(temp, chunk, getChunkFromNumber(cryptotext, pBox[round][chunk]))
+            for bit in range(15, -1, -1):
+                temp <<= 1
+                temp += (cryptotext >> pBox[round][bit]) & 1
+            cryptotext = temp
         
         cryptotext = cryptotext ^ keys[numRounds]
         
@@ -107,3 +103,7 @@ for _ in range(3000):
 print(doLinearAnalysis(plainCryptoPairs, 0b0000000011010000, 0b1010000010100000))
 print(KEY & 0b1010000010100000)
 
+
+spn = bindKeysToSPN(generateSPN([list(range(0, 16))] * 4, [list(range(0, 16))] * 4, 4), [0]*5)
+p = uint16(45634)
+print(spn(p))
