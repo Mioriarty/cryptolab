@@ -101,7 +101,7 @@ print("{:04x}".format(spn(0xFC78)))
 
 # generate plaintext cryptotext pairs
 plainCryptoPairs = []
-for _ in range(8000):
+for _ in range(4000):
     plaintext = uint16(int(random.uniform(0, 2**16-1)))
     plainCryptoPairs.append((plaintext, spn(plaintext)))
 
