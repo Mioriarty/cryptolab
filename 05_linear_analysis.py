@@ -109,8 +109,3 @@ for _ in range(4000):
 guessedKey = doLinearAnalysis(plainCryptoPairs, SBOX, 0b0000000011010000, 0b1010000010100000)
 print("{:16b}".format(guessedKey))
 print("{:16b}".format(KEY))
-
-
-spn = bindKeysToSPN(generateSPN([list(range(0, 16))] * 4, [list(range(0, 16))] * 4, 4), [0]*5)
-p = uint16(12345)
-print(spn(p))
