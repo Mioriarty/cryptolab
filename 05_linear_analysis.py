@@ -17,14 +17,13 @@ def generateSPN(sBox : list[uint8], pBox : list[uint8], numRounds : int):
             for chunk in range(3, -1, -1):
                 chunkValue = (cryptotext >> (chunk * 4)) & 0b1111
                 temp <<= 4
-                temp += sBox[round][chunkValue]
+                temp ^= sBox[round][chunkValue]
             cryptotext = temp
 
             # permutation
             temp = uint16(0)
-            for bit in range(15, -1, -1):
-                temp <<= 1
-                temp += (cryptotext >> pBox[round][bit]) & 1
+            for bit in range(16):
+                temp ^= ((cryptotext >> bit) & 1) << pBox[round][bit]
             cryptotext = temp
         
         cryptotext = cryptotext ^ keys[numRounds]
@@ -34,7 +33,7 @@ def generateSPN(sBox : list[uint8], pBox : list[uint8], numRounds : int):
     return encipher
 
 
-def bindKeysToSPN(spn, keys : list[bytearray]):
+def bindKeysToSPN(spn, keys : list[uint16]):
     return lambda plaintext : spn(plaintext, keys)
 
 def countSetBits(n : uint16) -> int:
@@ -89,7 +88,9 @@ PBOX = [ 0x0, 0x4, 0x8, 0xC, 0x1, 0x5, 0x9, 0xD, 0x2, 0x6, 0xA, 0xE, 0x3, 0x7, 0
 KEY  = 0xABCD
 
 spn = bindKeysToSPN(generateSPN([SBOX]*4, [PBOX]*4, 4), [KEY]*5)
+print("{:04x}".format(spn(0xFC78)))
 
+"""
 # generate plaintext cryptotext pairs
 plainCryptoPairs = []
 for _ in range(8000):
@@ -104,3 +105,4 @@ print(KEY & 0b1010000010100000)
 spn = bindKeysToSPN(generateSPN([list(range(0, 16))] * 4, [list(range(0, 16))] * 4, 4), [0]*5)
 p = uint16(12345)
 print(spn(p))
+"""
