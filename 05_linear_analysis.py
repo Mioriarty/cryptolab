@@ -21,11 +21,13 @@ def generateSPN(sBox : list[uint8], pBox : list[uint8], numRounds : int):
             cryptotext = temp
 
             # permutation
-            temp = uint16(0)
-            for bit in range(16):
-                temp ^= ((cryptotext >> bit) & 1) << pBox[round][bit]
-            cryptotext = temp
+            if round < numRounds-1:
+                temp = uint16(0)
+                for bit in range(16):
+                    temp ^= ((cryptotext >> bit) & 1) << pBox[round][bit]
+                cryptotext = temp
         
+
         cryptotext = cryptotext ^ keys[numRounds]
         
         return cryptotext
@@ -42,45 +44,51 @@ def countSetBits(n : uint16) -> int:
     else:
         return (n & 1) + countSetBits(n >> 1)
 
-def doLinearAnalysis(plainCryptoPairs : list[tuple[uint16]], includedInputs : uint16, includedOutputs : uint16) -> uint16:
-    includedOutputsList = [k for k in range(16) if (includedOutputs >> k) & 1 != 0]
+def doLinearAnalysis(plainCryptoPairs : list[tuple[uint16]], sBox : list[uint16], approximationInputs : uint16, approximationLastRound : uint16) -> uint16:
+    # calculate inverse sBox
+    sBoxInv = [0] * 16
+    for index, val in enumerate(sBox):
+        sBoxInv[val] = index
+    
 
+    # start with actual linear analysis
     keyBiases = {}
 
-    for smushedKey in range(1 << len(includedOutputsList)):
-        # Example:
-        # includedOutputs: 0b1010000010100000
-        # smushedKey:      0b1011
-        # key:             0b1000000010100000
+    # which chunks do we have to include in the key search
+    includedChunks = [i for i in range(4) if ((approximationLastRound >> i*4) & 0b1111) != 0]
 
-
-        # bit representation as list
-        smushedKey = [(smushedKey >> k) & 1 for k in range(len(includedOutputsList))]
+    for smushedKey in range(1 << (len(includedChunks) * 4)):
+        key = uint16(0)
+        for chunkIndex, chunk in enumerate(includedChunks):
+            key ^= (smushedKey >> (chunkIndex * 4) & 0b1111) << (chunk * 4)
         
-        # generate expended key over relevant bits
-        key = uint16(sum([smushedKey[i] << includedOutputsList[i] for i in range(len(includedOutputsList))]))
+        print("{:16b}".format(key))
         
         succeededAttemps = 0
         for plaintext, cryptotext in plainCryptoPairs:
-            guessedBeforeLastRound = cryptotext ^ key
-            
-            filteredPlaintext = plaintext & includedInputs
-            filteredGuess = guessedBeforeLastRound & includedOutputs
+            # backwards key addition
+            guessed = cryptotext ^ key
 
-            if (countSetBits(filteredPlaintext) + countSetBits(filteredGuess)) % 2 == 0:
+            # backward substitution
+            guessedBeforeSub = uint16(0)
+            for chunk in range(3, -1, -1):
+                chunkValue = (guessed >> (chunk * 4)) & 0b1111
+                guessedBeforeSub <<= 4
+                guessedBeforeSub ^= sBoxInv[chunkValue]
+            
+            # check linear approximation
+            filteredPlaintext = approximationInputs ^ plaintext
+            filteredBeforeSub = approximationLastRound ^ guessedBeforeSub
+
+            if (countSetBits(filteredPlaintext) + countSetBits(filteredBeforeSub)) % 2 == 0:
                 succeededAttemps += 1
         
-        print(succeededAttemps)
         bias = (succeededAttemps / len(plainCryptoPairs)) - 1/2
-
         keyBiases[key] = bias
-
+    
     print(keyBiases)
     bestKey = max(keyBiases, key = lambda e : abs(keyBiases[e]))
     return bestKey
-        
-
-
 
 
 SBOX = [ 0xE, 0x4, 0xD, 0x1, 0x2, 0xF, 0xB, 0x8, 0x3, 0xA, 0x6, 0xC, 0x5, 0x9, 0x0, 0x7 ]
@@ -90,7 +98,7 @@ KEY  = 0xABCD
 spn = bindKeysToSPN(generateSPN([SBOX]*4, [PBOX]*4, 4), [KEY]*5)
 print("{:04x}".format(spn(0xFC78)))
 
-"""
+
 # generate plaintext cryptotext pairs
 plainCryptoPairs = []
 for _ in range(8000):
@@ -98,11 +106,11 @@ for _ in range(8000):
     plainCryptoPairs.append((plaintext, spn(plaintext)))
 
 
-print(doLinearAnalysis(plainCryptoPairs, 0b0000000011010000, 0b1010000010100000))
-print(KEY & 0b1010000010100000)
+guessedKey = doLinearAnalysis(plainCryptoPairs, SBOX, 0b0000000011010000, 0b1010000010100000)
+print("{:16b}".format(guessedKey))
+print("{:16b}".format(KEY))
 
 
 spn = bindKeysToSPN(generateSPN([list(range(0, 16))] * 4, [list(range(0, 16))] * 4, 4), [0]*5)
 p = uint16(12345)
 print(spn(p))
-"""
