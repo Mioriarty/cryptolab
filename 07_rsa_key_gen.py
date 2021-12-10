@@ -75,3 +75,6 @@ print(cryptotext)
 print(rsa.rsa(cryptotext, decryptKey))
 
 print(findFactors(9854989 * 9857213))
+print(findFactors(9999749 * 3005293))
+
+# print(findFactors(5000000037041 * 10000000058171))
