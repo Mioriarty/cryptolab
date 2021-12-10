@@ -42,13 +42,14 @@ def rsa(text : list[int], key : tuple[int]):
     return [ powWithMod(t, key[0], key[1]) for t in text ]
 
 
-encryptKey = (53, 77)
-cryptotext = rsa([12, 42, 1, 0, 76, 30], encryptKey)
-print(cryptotext)
+if __name__ == "__main__":
+    encryptKey = (53, 77)
+    cryptotext = rsa([12, 42, 1, 0, 76, 30], encryptKey)
+    print(cryptotext)
 
-decryptKey = (mudularInverse(encryptKey[0], 10 * 6), encryptKey[1])
-print(rsa(cryptotext, decryptKey))
-print((encryptKey[0] * decryptKey[0]) % (10 * 6))
+    decryptKey = (mudularInverse(encryptKey[0], 10 * 6), encryptKey[1])
+    print(rsa(cryptotext, decryptKey))
+    print((encryptKey[0] * decryptKey[0]) % (10 * 6))
 
 
 
