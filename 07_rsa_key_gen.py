@@ -68,13 +68,13 @@ def findFactors(n : int) -> tuple[int]:
 
     return (u+w, u-w)
     
+if __name__ == "__main__":
+    (encryptKey, decryptKey) = genKey()
+    cryptotext = rsa.rsa([12, 42, 1, 0, 76, 30], encryptKey)
+    print(cryptotext)
+    print(rsa.rsa(cryptotext, decryptKey))
 
-(encryptKey, decryptKey) = genKey()
-cryptotext = rsa.rsa([12, 42, 1, 0, 76, 30], encryptKey)
-print(cryptotext)
-print(rsa.rsa(cryptotext, decryptKey))
+    print(findFactors(9854989 * 9857213))
+    print(findFactors(9999749 * 3005293))
 
-print(findFactors(9854989 * 9857213))
-print(findFactors(9999749 * 3005293))
-
-# print(findFactors(5000000037041 * 10000000058171))
+    # print(findFactors(5000000037041 * 10000000058171))
