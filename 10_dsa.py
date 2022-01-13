@@ -5,7 +5,7 @@ import hashlib
 rsa = __import__("06_rsa")
 rsa_key_gen = __import__("07_rsa_key_gen")
 
-hash = lambda m : int.from_bytes(bytearray(hashlib.sha1(m).digest()), 'big')
+hash = lambda m : int.from_bytes(hashlib.sha1(m).digest(), 'big')
 
 def bitLength(n : int) -> int:
     length = 0
