@@ -61,8 +61,9 @@ def decipherECB(ciphertext : bytearray, key : bytearray) -> str:
     
     return plaintext
 
-key = bytearray("Balko ist cooler", "UTF-8")
-text = "Hallo ich hoffe du kommst Ende nachmal raus. Das heisst naehmlich, dass das was ich gemacht habe, gar nicht so schlecht ist :)"
-cipher = encipherECB(text, key)
-print(cipher)
-print(decipherECB(cipher, key))
+if __name__=='__main__':
+    key = bytearray("Balko ist cooler", "UTF-8")
+    text = "Hallo ich hoffe du kommst Ende nachmal raus. Das heisst naehmlich, dass das was ich gemacht habe, gar nicht so schlecht ist :)"
+    cipher = encipherECB(text, key)
+    print(cipher)
+    print(decipherECB(cipher, key))
