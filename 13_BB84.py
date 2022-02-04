@@ -11,8 +11,7 @@ class Qubit:
         if isinstance(state, int):
             self.__state = basis[state]
         else:
-            invTrafoMat = np.linalg.inv(np.array(basis))
-            self.__state = invTrafoMat.dot(state)
+            self.__state = np.array(basis).dot(state)
     
     def measure(self, basis : list[np.ndarray]) -> int:
         # returns index of basis vector that got measured
