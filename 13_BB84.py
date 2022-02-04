@@ -26,8 +26,8 @@ class Qubit:
     
 # Alice's job
 def generateSetOfRandomBits(n : int) -> tuple[list[int], list[int], list[Qubit]]:
-    a = [ Qubit.randomBit() for _ in range(n)]
-    basisChoice = [ Qubit.randomBit() for _ in range(n)]
+    a = [ Qubit.randomBit() for _ in range(n) ]
+    basisChoice = [ Qubit.randomBit() for _ in range(n) ]
 
     qubits = [ Qubit(a[i], Qubit.STANDART_BASIS if basisChoice[i] == 0 else Qubit.HADAMART_BASIS) for i in range(n) ]
 
@@ -77,7 +77,6 @@ if extracedBits1 != extracedBits2:
     print("EVE WAS LISTENING")
 else:
     print("The key is")
-    print(key1)
+    print("".join(str(k) for k in key1))
+    print("".join(str(k) for k in key2))
 
-
-print(key1, key2)
