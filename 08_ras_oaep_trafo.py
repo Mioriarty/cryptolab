@@ -64,13 +64,14 @@ def decryptRsaWithTrafo(message : int, key : tuple[int]) -> bytearray:
     encrypted = rsa.rsa([ message ], key)[0]
     return invOeapTrafo(encrypted.to_bytes(getByteLength(encrypted) + 1, 'big'), hashFun)
 
-# wrapper around sha1 to convert return value to bytearray
-hashFun = lambda m : bytearray(hashlib.sha1(m).digest())
+if __name__ == "__main":
+    # wrapper around sha1 to convert return value to bytearray
+    hashFun = lambda m : bytearray(hashlib.sha1(m).digest())
 
-(encryptKey, decryptKey) = keyGen.genKey()
-message = bytearray([1, 2, 3, 0])
+    (encryptKey, decryptKey) = keyGen.genKey()
+    message = bytearray([1, 2, 3, 0])
 
-cryptotext = encryptRsaWithTrafo(message, encryptKey)
-print(decryptRsaWithTrafo(cryptotext, decryptKey))
+    cryptotext = encryptRsaWithTrafo(message, encryptKey)
+    print(decryptRsaWithTrafo(cryptotext, decryptKey))
 
 
