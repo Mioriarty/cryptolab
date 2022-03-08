@@ -98,3 +98,7 @@ class Matrix:
 
     def useAsZero(self, zero):
         self.zero = zero
+    
+    def transpose(self):
+        newVals = [self[i % self.height, i // self.height] for i in range(self.width * self.height)]
+        return Matrix(self.width, self.height, newVals)

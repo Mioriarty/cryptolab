@@ -3,6 +3,19 @@ import random
 rsa = __import__("06_rsa")
 
 def doMillerRabin(n : int) -> bool:
+    """
+    Does one iteration of the miller rabin test.
+
+    Args:
+        n (int): The value that will be checked against.
+
+    Returns:
+        bool: Returns whether this iteration of the test thinks that n is prime. If false is returned, n is defenitely not prime. If true, it might still be compound.
+    """
+    # discard even inputs
+    if n % 2 == 0:
+        return False
+
     # calculate m and k
     m = n - 1
     k = 0
@@ -27,13 +40,41 @@ def doMillerRabin(n : int) -> bool:
     return False
 
 def checkPrime(n : int, numTries : int = 15) -> bool:
+    """
+    Checks whether n is prime by performing miller rabin multiple times.
+
+    A return value of false is always coorect while a true might be falsed (although that is really unlikely)
+
+    Args:
+        n (int):  The value that will be checked against its primness.
+        numTries (int, optional): How many times should miller rabin be executed. Defaults to 15.
+
+    Returns:
+        bool: _description_
+    """
     for _ in range(numTries):
         if not doMillerRabin(n):
             return False
     return True
 
 
-def getNextPrime(start : int) -> bool :
+def getNextPrime(start : int) -> int:
+    """
+    Returns the next prime after start. Start has to be divisible by 30.
+
+    Args:
+        start (int): The value where the searching starts. It has to be divisible by 30.
+
+    Raises:
+        ValueError: When start is not divisible by 30.
+
+    Returns:
+        int: The next prime number after start
+    """
+
+    if start % 30 != 0:
+        raise ValueError("Start has to be divisble by 30")
+
     offsets = [1, 7, 11, 13, 17, 19, 23, 29]
     for offset in offsets:
         if checkPrime(start + offset):
@@ -41,6 +82,12 @@ def getNextPrime(start : int) -> bool :
     return getNextPrime(start + 30)
 
 def genKey() -> tuple[tuple[int]]:
+    """
+    Generates a RSA key pair.
+
+    Returns:
+        tuple[tuple[int]]: Returns tuple of public and private keys.
+    """
     # generate p
     z = random.randrange(10**100, 10**101)
     p = getNextPrime(30 * z)
@@ -49,15 +96,27 @@ def genKey() -> tuple[tuple[int]]:
     z = random.randrange(10**100, 10**101)
     q = getNextPrime(30 * z)
 
-    # generate d (For a prime d > max{p, q} we get ggT(d, phi(n)) = 1)
+    # generate d (For a prime d > max{p, q} we get gcd(d, phi(n)) = 1)
     d = getNextPrime(30 * (max(p, q) // 30 + 1))
     
     e = rsa.mudularInverse(d, (p-1)*(q-1))
     n = p * q
     return ((e, n), (d, n))
 
-# finds p, q for a given n using difference of squares
 def findFactors(n : int) -> tuple[int]:
+    """
+    Tries to find the factors of a number assuming they are close by. If they are not, the search will take forever.
+
+    The used method is the difference of squares:
+        Assume: n = (u-d)*(u+d) = u² - d² <=> d² = u² - n
+        => If we find a u such that u² - n is a perfect square, we found our p = u-d, q = u+d such that n = p*q
+
+    Args:
+        n (int): The number that shoule factored
+
+    Returns:
+        tuple[int]: The factors of n.
+    """
     isSquare = lambda x : int(x**0.5)**2 == x
 
     u = int(n**0.5) + 1

@@ -2,12 +2,47 @@ import include.utils as utils
 additiv = __import__("01_additiv")
 
 def encipher(text: str, key: str) -> str:
-    return "".join([ chr((ord(c) + ord(key[i % len(key)])) % 128) for i, c in enumerate(text) ])
+    """
+    Enciphers a 7-bit ASCII plaintext and a 7-bit ASCII key with the vigenère cipher.
+
+    Args:
+        text (str): 7-bit ASCII plaintext.
+        key (str): 7-bit ASCII key.
+
+    Returns:
+        str: Ciphertext.
+    """
+    return "".join(chr((ord(c) + ord(key[i % len(key)])) % 128) for i, c in enumerate(text))
 
 def decipher(text: str, key: str) -> str:
-    return "".join([ chr((ord(c) - ord(key[i % len(key)]) + 128) % 128) for i, c in enumerate(text) ])
+    """
+    Deciphers a 7-bit ASCII ciphertext and a 7-bit ASCII key with the vigenère cipher.
+
+    Args:
+        text (str): 7-bit ASCII ciphertext
+        key (str): 7-bit ASCII key
+
+    Returns:
+        str: Plaintext.
+    """
+    return "".join(chr((ord(c) - ord(key[i % len(key)]) + 128) % 128) for i, c in enumerate(text))
 
 def determineBestKeyLength(text: str, minLength : int = 2, maxLength : int = 60) -> int:
+    """
+    Determines the most likely key length that was used when enciphering with the vigenère cipher.
+
+    For each possible key length, it will compute the average of the index of coincidence of all possible coloumns of the key. The highest index will win.
+
+    If there is a smaller length with an index almost as high, this smaller will be taken instead.
+
+    Args:
+        text (str): Ciphertext
+        minLength (int, optional): Minimum key length. Defaults to 2.
+        maxLength (int, optional): Maximum key length. Defaults to 60.
+
+    Returns:
+        int: The most likely key length that was used when enciphering with the vigenère cipher.
+    """
     icValues = {}
     for keyLength in range(minLength, maxLength + 1):
         icTotal = 0
@@ -37,7 +72,17 @@ def determineBestKeyLength(text: str, minLength : int = 2, maxLength : int = 60)
     return bestKeyLength
 
 def determineKeyFromKeyLength(text : str, keyLength : int) -> str:
-    return "".join([ chr(additiv.determineBestKey(text[groupIndex::keyLength])) for groupIndex in range(keyLength) ])
+    """
+    Given the ciphertext and the key length, it will compute the most likely key by using additive.determineBestKey coloumnwise.
+
+    Args:
+        text (str): 7-bit ASCII ciphertext
+        keyLength (int): Length of the key used.
+
+    Returns:
+        str: _description_
+    """
+    return "".join(chr(additiv.determineBestKey(text[groupIndex::keyLength])) for groupIndex in range(keyLength))
 
 
 if(__name__ == '__main__'):

@@ -2,6 +2,9 @@ import numpy as np
 import random
 
 class Qubit:
+    """
+    Represents a Qubit. That can be only read in a certain basis.
+    """
 
     STANDART_BASIS = [ np.array((1, 0)), np.array((0, 1)) ]
     HADAMART_BASIS = [ np.array((1, 1)) / np.sqrt(2), np.array((1, -1)) / np.sqrt(2) ]
@@ -25,6 +28,15 @@ class Qubit:
     
 # Alice's job
 def generateSetOfRandomBits(n : int) -> tuple[list[int], list[int], list[Qubit]]:
+    """
+    Generates secret classical bits, a secret choice of basis and the qubits that incodes the classical bits in the chosen basis.
+
+    Args:
+        n (int): Number of bits to be generated.
+
+    Returns:
+        tuple[list[int], list[int], list[Qubit]]: classical bits, a secret choice of basis, the qubits that incodes the classical bits in the chosen basis.
+    """
     a = [ Qubit.randomBit() for _ in range(n) ]
     basisChoice = [ Qubit.randomBit() for _ in range(n) ]
 
@@ -34,6 +46,15 @@ def generateSetOfRandomBits(n : int) -> tuple[list[int], list[int], list[Qubit]]
 
 # Bob's job
 def readQubitsRondomly(qubits : list[Qubit]) -> tuple[list[int], list[int]]:
+    """
+    Reads the given qubits in a random basis.
+
+    Args:
+        qubits (list[Qubit]): The measuered qubit values, the basis in which the qubits where mesured
+
+    Returns:
+        tuple[list[int], list[int]]: mesured bits, basis in which the qubits where measured
+    """
     basisChoice = [ Qubit.randomBit() for _ in range(len(qubits))]
 
     readBits = [ qubits[i].measure(Qubit.STANDART_BASIS if basisChoice[i] == 0 else Qubit.HADAMART_BASIS) for i in range(len(qubits)) ]
@@ -42,10 +63,32 @@ def readQubitsRondomly(qubits : list[Qubit]) -> tuple[list[int], list[int]]:
 
 # sould be done by both
 def compareAndDiscardBits(basisChoice1 : list[int], basisChoice2 : list[int], bits : list[int]) -> list[int]:
+    """
+    Compares chosen basis and discards all classical bits where the chosen basis don't match.
+
+    Args:
+        basisChoice1 (list[int]): Chosen basis of the first participant.
+        basisChoice2 (list[int]): Chosen basis of the second participant.
+        bits (list[int]): Mesured classical bits.
+
+    Returns:
+        list[int]: All classical bits where the basis choice match.
+    """
     return [ bits[i] for i in range(len(bits)) if basisChoice1[i] == basisChoice2[i] ]
 
 # to check whether Eve was listening
 def extractRandomBits(bits : list[int], k : int, seed : int) -> tuple[list[int], list[int]]:
+    """
+    Chooses k random bits and extract them.
+
+    Args:
+        bits (list[int]): All bits.
+        k (int): Amount of bits to be extracted. 
+        seed (int): A set seed so that both participants will extract the same bits.
+
+    Returns:
+        tuple[list[int], list[int]]: _description_
+    """
     extractedBits = []
     random.seed(seed)
 

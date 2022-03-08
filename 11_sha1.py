@@ -1,15 +1,19 @@
-# Hauptsächich für __add__, __invert__ und __lshift__
 class int32:
+    """
+    Represents an 32 bit Integer that automatically overflows without grumble.
+
+    I implemented that mainly because of __add__, __invert__ und __lshift__.
+    """
 
     MAX = 1 << 32
 
-    def __init__(self, val : int | bytearray = 0):
+    def __init__(self, val : int | bytearray | bytes = 0):
         if isinstance(val, int):
             self.val = val  % int32.MAX
-        elif isinstance(val, bytearray):
+        elif isinstance(val, bytearray) or isinstance(val, bytes):
             self.val = int.from_bytes(val, byteorder='big') % int32.MAX
         else:
-            raise TypeError("Cration of int32 must happen with int or bytearray")
+            raise TypeError("Cration of int32 must happen with int or bytearray not " + str(type(val)))
     
 
     def __add__(self, o : 'int32') -> 'int32':
@@ -38,14 +42,35 @@ class int32:
 
 
 def addPadding(message : bytearray) -> bytearray:
+    """
+    Does the sha1 preprocessing by adding a padding so that the byte length is congruent 56 mod 64 and the last 8 bytes are the text length in bytes.
+
+    Args:
+        message (bytearray): The message we want to preprocess.
+
+    Returns:
+        bytearray: The result of the preprocessing.
+    """
     mL = 8 * len(message)
 
     numPadding = (120 - ((len(message) + 1) % 64)) % 64
     return message + bytearray([ 0x80 ] + [ 0 ] * numPadding) + mL.to_bytes(8, byteorder='big')
 
 
-def sha1(message : str) -> int:
-    message = addPadding(bytearray(message, 'UTF-8'))
+def sha1(message : str | bytearray) -> int:
+    """
+    Does the sha1 algorithm to a message.
+
+    Args:
+        message (str | bytearray): Message to be hashed
+
+    Returns:
+        int: Hash digest.
+    """
+    if isinstance(message, str):
+        message = bytearray(message, 'UTF-8')
+    
+    message = addPadding(message)
 
     h0 = int32(0x67452301)
     h1 = int32(0xEFCDAB89)
@@ -66,7 +91,6 @@ def sha1(message : str) -> int:
         
         # initialize the variables
         a, b, c, d, e = h0, h1, h2, h3, h4
-
 
         # do the crazy sha-1 stuff
         for i in range(80):
