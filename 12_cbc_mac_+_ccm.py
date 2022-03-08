@@ -58,12 +58,12 @@ def decipherCcm(cyphertext : bytearray, key : bytearray, ctr : int) -> bytearray
     return aesCtrMode(cyphertext, aesKeys, ctr)
     
 
+if __name__ == "__main__":
+    key = bytearray("Balko ist cooler", "UTF-8")
+    text = "Hallo ich hoffe du kommst Ende nachmal raus. Das heisst naehmlich, dass das was ich gemacht habe, gar nicht so schlecht ist :)"
+    ctr = int.from_bytes(random.randbytes(8), byteorder='big')
 
-key = bytearray("Balko ist cooler", "UTF-8")
-text = "Hallo ich hoffe du kommst Ende nachmal raus. Das heisst naehmlich, dass das was ich gemacht habe, gar nicht so schlecht ist :)"
-ctr = int.from_bytes(random.randbytes(8), byteorder='big')
-
-c = encipherCcm(bytearray(text, 'UTF-8'), key, ctr)
-print(decipherCcm(c, key, ctr))
-c = bytearray([ 5 ]) + c[1:]
-print(decipherCcm(c, key, ctr))
+    c = encipherCcm(bytearray(text, 'UTF-8'), key, ctr)
+    print(decipherCcm(c, key, ctr))
+    c = bytearray([ 5 ]) + c[1:]
+    print(decipherCcm(c, key, ctr))

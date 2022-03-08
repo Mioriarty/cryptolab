@@ -89,24 +89,24 @@ def doLinearAnalysis(plainCryptoPairs : list[tuple[uint16]], sBox : list[uint16]
     bestKey = max(keyBiases, key = lambda e : abs(keyBiases[e]))
     return bestKey
 
+if __name__ == "__main__":
+    SBOX = [ 0xE, 0x4, 0xD, 0x1, 0x2, 0xF, 0xB, 0x8, 0x3, 0xA, 0x6, 0xC, 0x5, 0x9, 0x0, 0x7 ]
+    PBOX = [ 0x0, 0x4, 0x8, 0xC, 0x1, 0x5, 0x9, 0xD, 0x2, 0x6, 0xA, 0xE, 0x3, 0x7, 0xB, 0xF ]
+    KEY  = 0x1Ab2
 
-SBOX = [ 0xE, 0x4, 0xD, 0x1, 0x2, 0xF, 0xB, 0x8, 0x3, 0xA, 0x6, 0xC, 0x5, 0x9, 0x0, 0x7 ]
-PBOX = [ 0x0, 0x4, 0x8, 0xC, 0x1, 0x5, 0x9, 0xD, 0x2, 0x6, 0xA, 0xE, 0x3, 0x7, 0xB, 0xF ]
-KEY  = 0x1Ab2
-
-spn = bindKeysToSPN(generateSPN([SBOX]*4, [PBOX]*4, 4), [KEY]*5)
-
-
-# generate plaintext cryptotext pairs
-plainCryptoPairs = []
-for _ in range(8000):
-    plaintext = uint16(int(random.uniform(0, 2**16-1)))
-    plainCryptoPairs.append((plaintext, spn(plaintext)))
+    spn = bindKeysToSPN(generateSPN([SBOX]*4, [PBOX]*4, 4), [KEY]*5)
 
 
-# guessedKey = doLinearAnalysis(plainCryptoPairs, SBOX, 0b0000000011010000, 0b1010000010100000)
-guessedKey = doLinearAnalysis(plainCryptoPairs, SBOX, 0b0000101100000000, 0b0000010100000101)
-print("\nGuessed Key:")
-print("{:16b}".format(guessedKey))
-print("Actual Key:")
-print("{:16b}".format(KEY))
+    # generate plaintext cryptotext pairs
+    plainCryptoPairs = []
+    for _ in range(8000):
+        plaintext = uint16(int(random.uniform(0, 2**16-1)))
+        plainCryptoPairs.append((plaintext, spn(plaintext)))
+
+
+    # guessedKey = doLinearAnalysis(plainCryptoPairs, SBOX, 0b0000000011010000, 0b1010000010100000)
+    guessedKey = doLinearAnalysis(plainCryptoPairs, SBOX, 0b0000101100000000, 0b0000010100000101)
+    print("\nGuessed Key:")
+    print("{:16b}".format(guessedKey))
+    print("Actual Key:")
+    print("{:16b}".format(KEY))

@@ -65,16 +65,17 @@ def verify(signatur : tuple[int], hashedM : int, p : int, q : int, g : int, y : 
 
     return v == r
 
-p, q, g = genParameters()
-x, y    = genKey(p, q, g)
-m = bytearray([2, 3, 4])
-hashedM = hash(m)
+if __name__ == "__main__":
+    p, q, g = genParameters()
+    x, y    = genKey(p, q, g)
+    m = bytearray([2, 3, 4])
+    hashedM = hash(m)
 
 
-signatur = sign(hashedM, p, q, g, x)
+    signatur = sign(hashedM, p, q, g, x)
 
-print(verify(signatur, hashedM, p, q, g, y))
+    print(verify(signatur, hashedM, p, q, g, y))
 
-hashedM += 1
-print(verify(signatur, hashedM, p, q, g, y))
+    hashedM += 1
+    print(verify(signatur, hashedM, p, q, g, y))
 

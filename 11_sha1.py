@@ -95,5 +95,5 @@ def sha1(message : str) -> int:
 
     return (h0.val << (32*4)) + (h1.val << (32*3)) + (h2.val << (32*2)) + (h3.val << (32*1)) + h4.val
     
-
-print(hex(sha1("")))
+if __name__ == "__main__":
+    print(hex(sha1("")))

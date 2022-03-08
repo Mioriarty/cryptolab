@@ -57,25 +57,25 @@ def extractRandomBits(bits : list[int], k : int, seed : int) -> tuple[list[int],
     return bits, extractedBits
 
 
+if __name__ == "__main__":
+    aliceBits, aliceBasisChoice, qubits = generateSetOfRandomBits(100)
+    bobsBits, bobsBasisChoice = readQubitsRondomly(qubits)
 
-aliceBits, aliceBasisChoice, qubits = generateSetOfRandomBits(100)
-bobsBits, bobsBasisChoice = readQubitsRondomly(qubits)
+    # they exchange now their chosen basis
 
-# they exchange now their chosen basis
+    key1 = compareAndDiscardBits(aliceBasisChoice, bobsBasisChoice, aliceBits)
+    key2 = compareAndDiscardBits(aliceBasisChoice, bobsBasisChoice, bobsBits)
+    # key1 == key2 should be the case
 
-key1 = compareAndDiscardBits(aliceBasisChoice, bobsBasisChoice, aliceBits)
-key2 = compareAndDiscardBits(aliceBasisChoice, bobsBasisChoice, bobsBits)
-# key1 == key2 should be the case
+    # check whether Eve was listening
+    seed = random.randint(0, 1 << 32)
+    key1, extracedBits1 = extractRandomBits(key1, 15, seed)
+    key2, extracedBits2 = extractRandomBits(key2, 15, seed)
 
-# check whether Eve was listening
-seed = random.randint(0, 1 << 32)
-key1, extracedBits1 = extractRandomBits(key1, 15, seed)
-key2, extracedBits2 = extractRandomBits(key2, 15, seed)
-
-if extracedBits1 != extracedBits2:
-    print("EVE WAS LISTENING")
-else:
-    print("The key is")
-    print("".join(str(k) for k in key1))
-    print("".join(str(k) for k in key2))
+    if extracedBits1 != extracedBits2:
+        print("EVE WAS LISTENING")
+    else:
+        print("The key is")
+        print("".join(str(k) for k in key1))
+        print("".join(str(k) for k in key2))
 

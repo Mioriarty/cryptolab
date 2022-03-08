@@ -24,11 +24,11 @@ def genPublicValues(range : tuple[int] = (10**10, 10**20)):
             return p, g
 
 
+if __name__ == "__main__":
+    p, g = genPublicValues()
 
-p, g = genPublicValues()
+    t1, a1 = calcTransmitValue(p, g)
+    t2, a2 = calcTransmitValue(p, g)
 
-t1, a1 = calcTransmitValue(p, g)
-t2, a2 = calcTransmitValue(p, g)
-
-print(calcSecretFromTransmitValue(t2, p, a1))
-print(calcSecretFromTransmitValue(t1, p, a2))
+    print(calcSecretFromTransmitValue(t2, p, a1))
+    print(calcSecretFromTransmitValue(t1, p, a2))
