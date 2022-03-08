@@ -101,14 +101,15 @@ def extractRandomBits(bits : list[int], k : int, seed : int) -> tuple[list[int],
 
 
 if __name__ == "__main__":
-    aliceBits, aliceBasisChoice, qubits = generateSetOfRandomBits(100)
+    aliceBits, aliceBasisChoice, qubits = generateSetOfRandomBits(100) # set to 50 to check if EVE was listening
     bobsBits, bobsBasisChoice = readQubitsRondomly(qubits)
 
     # they exchange now their chosen basis
 
     key1 = compareAndDiscardBits(aliceBasisChoice, bobsBasisChoice, aliceBits)
     key2 = compareAndDiscardBits(aliceBasisChoice, bobsBasisChoice, bobsBits)
-    # key1 == key2 should be the case
+    # when eve is listeneing to bit 0: key2[0] = 0
+    # otherwise: key1 == key2 should be the case
 
     # check whether Eve was listening
     seed = random.randint(0, 1 << 32)
